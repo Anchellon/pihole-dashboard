@@ -1,13 +1,13 @@
 // js Sqlite3 Driver
 var sqlite3 = require("sqlite3").verbose();
 var fs = require("fs");
-var dbFile = "/etc/pihole/gravity.db"; //file locations of the sqlite3 db
-var dbExists = fs.existsSync(dbFile);
-// Checking if DB Exists
-if (!dbExists) {
-    console.log("DB Doesn't Exist");
-}
-var db = new sqlite3.Database(dbFile);
+// var dbFile = "/etc/pihole/gravity.db"; //file locations of the sqlite3 db
+// var dbExists = fs.existsSync(dbFile);
+// // Checking if DB Exists
+// if (!dbExists) {
+//     console.log("DB Doesn't Exist");
+// }
+// var db = new sqlite3.Database(dbFile);
 
 // INSERT INTO MyTable
 //     ( Column_foo, Column_CreatedOn)
@@ -45,21 +45,22 @@ function generateQueryString(links) {
 
 // This method taks in a request with the links
 // It is then added into the corresponding gravity db of the pihole so that functioning can take place
-exports.link_create_postMethod = async (req, res) => {
+exports.link_create_postMethod = (req, res) => {
+    // async (req, res) => {
     let links = req.body.links;
     // let links = ["reddit.com", "facebook.com"];
     let queryString =
         "INSERT INTO domainlist VALUES" + generateQueryString(links);
 
-    db.run(queryString, [], function (err) {
-        if (err) {
-            console.log(err.message);
-            return res.send(400, "Failled to add");
-        }
-        // get the last insert id
-        console.log(`Rows inserted ${this.changes}`);
-    });
-    db.close();
+    // db.run(queryString, [], function (err) {
+    //     if (err) {
+    //         console.log(err.message);
+    //         return res.send(400, "Failled to add");
+    //     }
+    //     // get the last insert id
+    //     console.log(`Rows inserted ${this.changes}`);
+    // });
+    // db.close();
     res.send(200, "Success");
 };
 // Further work ability to enable and disable links, Potentially submit cron jobs too
