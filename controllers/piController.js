@@ -221,6 +221,7 @@ exports.focusMode = async (req, res) => {
             },${parseInt(record.startTime.slice(0, 2))},${parseInt(
                 record.endTime.slice(2, 4)
             )})`;
+            console.log(insertQuery);
 
             await focusDbRun(insertQuery);
 
