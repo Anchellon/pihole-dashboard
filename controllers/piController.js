@@ -79,7 +79,7 @@ exports.link_create_postMethod = async (req, res) => {
 
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
-    res = await db.all(lastIdQuery, [], (err, rows) => {
+    result = await db.all(lastIdQuery, [], (err, rows) => {
         if (err) {
             throw err;
         }
