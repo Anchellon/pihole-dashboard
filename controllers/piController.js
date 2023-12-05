@@ -231,7 +231,7 @@ exports.focusMode = async (req, res) => {
             if (
                 isMorethanCurrentTime(
                     parseInt(record.startTime.slice(0, 2)),
-                    parseInt(record.endTime.slice(2, 4))
+                    parseInt(record.endTime.slice(3, 5))
                 )
             ) {
                 let lastIdDomList = 0;
@@ -243,9 +243,11 @@ exports.focusMode = async (req, res) => {
                     lastIdDomList = row.id;
                 });
 
-                let updateQuery = `INSERT INTO domainlist VALUES(${lastIdDomList},3,${
+                let updateQuery = `INSERT INTO domainlist VALUES(${++lastIdDomList},3,\"${
                     record.domainName
-                },true, ${Date.now() / 1000},${Date.now() / 1000},"");`;
+                }\",true, ${Date.now() / 1000},${
+                    Date.now() / 1000
+                },"") ON CONFLICT(domain) DO NOTHING;`;
 
                 await dbRun(updateQuery);
             }
