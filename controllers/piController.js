@@ -121,33 +121,6 @@ exports.link_create_postMethod = async (req, res) => {
         console.error(error);
         res.status(500).send("Internal Server Error");
     }
-    // let result = await db.get(lastIdQuery, [], (err, rows) => {
-    //     if (err) {
-    //         throw err;
-    //     }
-    //     rows.forEach((row) => {
-    //         lastId = row.id;
-    //         console.log("bruh" + lastId + "hi");
-    //     });
-    // });
-    // console.log(result);
-    // console.log("bombastic" + lastId);
-
-    // let queryString =
-    //     "INSERT INTO domainlist VALUES" + generateQueryString(links, lastId);
-    // console.log(queryString);
-
-    // db.run(queryString, [], function (err) {
-    //     if (err) {
-    //         console.log(err.message);
-    //         return res.send(400, "Failled to add");
-    //     }
-    //     // get the last insert id
-    //     console.log(`Rows inserted ${this.changes}`);
-    // });
-    // db.close();
-    // updatePihole();
-    // res.send(200, "Success");
 };
 // Further work ability to enable and disable links, Potentially submit cron jobs too
 exports.link_create_postMethod2 = (req, res) => {};
