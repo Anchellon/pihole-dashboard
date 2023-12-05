@@ -88,7 +88,7 @@ exports.link_create_postMethod = async (req, res) => {
             console.log("bruh" + lastId + "hi");
         });
     });
-    console.log(lastId);
+    console.log("bombastic" + lastId);
 
     let queryString =
         "INSERT INTO domainlist VALUES" + generateQueryString(links, lastId);
