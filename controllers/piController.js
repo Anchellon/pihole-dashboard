@@ -5,15 +5,18 @@ var fs = require("fs");
 // var dbFile = "test_db/gravity_old.db"; //file locations of the sqlite3 db
 // var dbFile = "/etc/pihole/gravity.db";
 var dbExists = fs.existsSync(dbFile);
+var focusDbFile = "test_db/focus.db";
+let createQuery =
+    "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain string, startTime string, endTime string);";
 var id = 0;
 // Checking if DB Exists
-if (!dbExists) {
+if (!dbExists || !focusDbFile) {
     console.log("DB Doesn't Exist");
 } else {
     console.log("connected to db");
 }
 var db = new sqlite3.Database(dbFile);
-
+var focusDb = new sqlite3.Database(focusDbFile);
 // INSERT INTO MyTable
 //     ( Column_foo, Column_CreatedOn)
 //     VALUES
@@ -123,6 +126,71 @@ exports.toggle_internet = (req, res) => {
         // get the last insert id
         console.log(`Rows inserted ${this.changes}`);
     });
+    db.close();
+    updatePihole();
+    res.send(200, "Success");
+};
+
+// {
+// focusRecord: [
+//      {   domainName: string,
+//          startTime: HH:MM,
+//          endTime: HH:MM
+//      }
+//  ]
+// }
+
+exports.focusMode = (req, res) => {
+    let focusRecord = req.body.focusRecord;
+    let lastIdQuery = "SELECT * FROM focusdb ORDER BY id DESC LIMIT 1;";
+    let lastId = 0;
+    focusDb.all(lastIdQuery, [], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        rows.forEach((row) => {
+            lastId = row.id;
+        });
+    });
+    focusRecord.forEach((record) => {
+        let insertQuery = `INSERT INTO focusdb VALUES (${++lastId},${
+            record.domainName
+        },${record.startTime},${record.endTime})`;
+        db.run(insertQuery, [], function (err) {
+            if (err) {
+                console.log(err.message);
+                return res.send(400, "Failled to add");
+            }
+            // get the last insert id
+            console.log(`Rows inserted ${this.changes}`);
+        });
+        if (isMorethanCurrentTime(record.startTime)) {
+            let lastIdDomList = 0;
+            let lastIdQueryDl =
+                "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
+            db.all(lastIdQueryDl, [], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                rows.forEach((row) => {
+                    lastIdDomList = row.id;
+                });
+            });
+
+            let updateQuery = `INSERT INTO domainlist VALUES(${lastIdDomList},3,${
+                record.domainName
+            },true, ${Date.now() / 1000},${Date.now() / 1000},"");`;
+            db.run(updateQuery, [], function (err) {
+                if (err) {
+                    console.log(err.message);
+                    return res.send(400, "Failled to add");
+                }
+                // get the last insert id
+                console.log(`Rows inserted ${this.changes}`);
+            });
+        }
+    });
+    focusDb.close();
     db.close();
     updatePihole();
     res.send(200, "Success");
