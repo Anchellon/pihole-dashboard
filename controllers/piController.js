@@ -159,39 +159,54 @@ exports.link_create_postMethod2 = (req, res) => {};
 //     updatePihole();
 //     res.send(200, "Success");
 // };
-exports.toggle_internet = (req, res) => {
-    // get current status of internet
+exports.toggle_internet = async (req, res) => {
     let toggleInternetQuery =
         "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet%';"; // Properly close the LIKE clause
-    let truth = null;
-    let id = null;
-    db.each(toggleInternetQuery, [], (err, row) => {
-        // Use 'row' directly instead of 'rows'
-        if (err) {
-            throw err;
-        }
-        truth = row.enabled;
-        id = row.id;
-    });
-    console.log(truth);
-    console.log(id);
-    // Toggle the truth value
-    truth = truth ? 0 : 1;
+    let getInternetStatus = () => {
+        return new Promise((resolve, reject) => {
+            db.get(toggleInternetQuery, [], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    let truth = 0;
+                    // rows.forEach((row) => {
+                    truth = row.enabled;
+                    id = row.id;
+                    console.log("bruh" + truth + "hi");
+                    // });
+                    resolve([truth, id]);
+                }
+            });
+        });
+    };
+    try {
+        // Await the promise to get the lastId
+        let result = await getInternetStatus();
+        let truth = result[0];
+        let id = result[1];
+        console.log("bombastic truth " + truth + "id " + id);
+        console.log(truth);
+        console.log(id);
+        // Toggle the truth value
+        truth = truth ? 0 : 1;
 
-    let toggleQuery = `UPDATE domainlist SET enabled = ? WHERE id = ?;`;
-    db.run(toggleQuery, [truth, id], function (err) {
-        // Use parameters to prevent SQL injection
-        if (err) {
-            console.log(err.message);
-            return res.status(400).send("Failed to update");
-        }
-        // get the last insert id
-        console.log(`Rows updated ${this.changes}`);
-    });
-
-    db.close();
-    updatePihole();
-    res.status(200).send("Success");
+        let toggleQuery = `UPDATE domainlist SET enabled = ? WHERE id = ?;`;
+        db.run(toggleQuery, [truth, id], function (err) {
+            // Use parameters to prevent SQL injection
+            if (err) {
+                console.log(err.message);
+                return res.status(400).send("Failed to update");
+            }
+            // get the last insert id
+            console.log(`Rows updated ${this.changes}`);
+        });
+        db.close();
+        updatePihole();
+        res.status(200).send("Success");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
 };
 
 // {
