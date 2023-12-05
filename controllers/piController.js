@@ -81,15 +81,15 @@ exports.link_create_postMethod = async (req, res) => {
     let lastId = 0;
     let getLastId = () => {
         return new Promise((resolve, reject) => {
-            db.get(lastIdQuery, [], (err, rows) => {
+            db.get(lastIdQuery, [], (err, row) => {
                 if (err) {
                     reject(err);
                 } else {
                     let lastId = 0;
-                    rows.forEach((row) => {
-                        lastId = row.id;
-                        console.log("bruh" + lastId + "hi");
-                    });
+                    // rows.forEach((row) => {
+                    lastId = row.id;
+                    console.log("bruh" + lastId + "hi");
+                    // });
                     resolve(lastId);
                 }
             });
