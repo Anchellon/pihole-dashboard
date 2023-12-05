@@ -79,7 +79,7 @@ exports.link_create_postMethod = async (req, res) => {
 
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
-    result = await db.all(lastIdQuery, [], (err, rows) => {
+    result = await db.get(lastIdQuery, [], (err, rows) => {
         if (err) {
             throw err;
         }
@@ -88,6 +88,7 @@ exports.link_create_postMethod = async (req, res) => {
             console.log("bruh" + lastId + "hi");
         });
     });
+    console.log(result);
     console.log("bombastic" + lastId);
 
     let queryString =
