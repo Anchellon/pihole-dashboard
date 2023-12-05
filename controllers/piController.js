@@ -79,33 +79,75 @@ exports.link_create_postMethod = async (req, res) => {
 
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
-    let result = await db.get(lastIdQuery, [], (err, rows) => {
-        if (err) {
-            throw err;
-        }
-        rows.forEach((row) => {
-            lastId = row.id;
-            console.log("bruh" + lastId + "hi");
+    let getLastId = () => {
+        return new Promise((resolve, reject) => {
+            db.get(lastIdQuery, [], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    let lastId = 0;
+                    rows.forEach((row) => {
+                        lastId = row.id;
+                        console.log("bruh" + lastId + "hi");
+                    });
+                    resolve(lastId);
+                }
+            });
         });
-    });
-    console.log(result);
-    console.log("bombastic" + lastId);
+    };
+    try {
+        // Await the promise to get the lastId
+        let lastId = await getLastId();
 
-    let queryString =
-        "INSERT INTO domainlist VALUES" + generateQueryString(links, lastId);
-    console.log(queryString);
+        console.log("bombastic" + lastId);
 
-    db.run(queryString, [], function (err) {
-        if (err) {
-            console.log(err.message);
-            return res.send(400, "Failled to add");
-        }
-        // get the last insert id
-        console.log(`Rows inserted ${this.changes}`);
-    });
-    db.close();
-    updatePihole();
-    res.send(200, "Success");
+        let queryString =
+            "INSERT INTO domainlist VALUES" +
+            generateQueryString(links, lastId);
+        console.log(queryString);
+
+        db.run(queryString, [], function (err) {
+            if (err) {
+                console.log(err.message);
+                return res.status(400).send("Failed to add");
+            }
+            // get the last insert id
+            console.log(`Rows inserted ${this.changes}`);
+        });
+        db.close();
+        updatePihole();
+        res.status(200).send("Success");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+    // let result = await db.get(lastIdQuery, [], (err, rows) => {
+    //     if (err) {
+    //         throw err;
+    //     }
+    //     rows.forEach((row) => {
+    //         lastId = row.id;
+    //         console.log("bruh" + lastId + "hi");
+    //     });
+    // });
+    // console.log(result);
+    // console.log("bombastic" + lastId);
+
+    // let queryString =
+    //     "INSERT INTO domainlist VALUES" + generateQueryString(links, lastId);
+    // console.log(queryString);
+
+    // db.run(queryString, [], function (err) {
+    //     if (err) {
+    //         console.log(err.message);
+    //         return res.send(400, "Failled to add");
+    //     }
+    //     // get the last insert id
+    //     console.log(`Rows inserted ${this.changes}`);
+    // });
+    // db.close();
+    // updatePihole();
+    // res.send(200, "Success");
 };
 // Further work ability to enable and disable links, Potentially submit cron jobs too
 exports.link_create_postMethod2 = (req, res) => {};
