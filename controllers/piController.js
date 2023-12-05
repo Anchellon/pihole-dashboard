@@ -77,20 +77,17 @@ exports.link_create_postMethod = async (req, res) => {
     // let links = req.body.links;
     let links = ["reddit.com", "facebook.com"];
 
-    let lastIdQuery = "SELECT * FROM domainlist"; // ORDER BY id DESC LIMIT 1;";
+    let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
-    let result = await db.all(lastIdQuery, [], (err, rows) => {
+    let result = await db.get(lastIdQuery, [], (err, rows) => {
         if (err) {
-            console.log("error fk");
             throw err;
         }
-        // console.log("bruh2" + rows);
         rows.forEach((row) => {
             lastId = row.id;
-            console.log("bruh" + JSON.stringify(row) + "hi");
+            console.log("bruh" + lastId + "hi");
         });
     });
-
     console.log(result);
     console.log("bombastic" + lastId);
 
