@@ -81,6 +81,7 @@ exports.link_create_postMethod = async (req, res) => {
     let lastId = 0;
     let result = await db.get(lastIdQuery, [], (err, rows) => {
         if (err) {
+            console.log("error fk");
             throw err;
         }
         console.log("bruh2" + rows);
