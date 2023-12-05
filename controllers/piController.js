@@ -197,7 +197,7 @@ exports.toggle_internet = async (req, res) => {
                 console.log(err.message);
                 return res.status(400).send("Failed to update");
             }
-            // get the last insert id
+            // get the last insert id cause why not
             console.log(`Rows updated ${this.changes}`);
         });
         db.close();
