@@ -173,7 +173,8 @@ exports.toggle_internet = (req, res) => {
         truth = row.enabled;
         id = row.id;
     });
-
+    console.log(truth);
+    console.log(id);
     // Toggle the truth value
     truth = truth ? 0 : 1;
 
