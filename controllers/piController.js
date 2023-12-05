@@ -9,8 +9,8 @@ var focusDbFile = "db/focus.db";
 var db = new sqlite3.Database(dbFile);
 var focusDb = new sqlite3.Database(focusDbFile);
 const { promisify } = require("util");
-const dbAll = promisify(db.all).bind(db);
-const dbRun = promisify(db.run).bind(db);
+const focusDbAll = promisify(focusDb.all).bind(focusDb);
+const focusDbRun = promisify(focusDb.run).bind(focusDb);
 let createTableQuery =
     "CREATE TABLE IF NOT EXISTS focusdb( id PRIMARY KEY, domain text, startTimeH integer, startTimeM integer, endTimeH integer,endTimeM integer);";
 var id = 0;
@@ -209,7 +209,7 @@ exports.focusMode = async (req, res) => {
         let lastId = 0;
 
         // get last id from focus db
-        const rows = await dbAll(lastIdQuery);
+        const rows = await focusDbAll(lastIdQuery);
         rows.forEach((row) => {
             lastId = row.id;
         });
@@ -221,7 +221,7 @@ exports.focusMode = async (req, res) => {
                 record.endTime.slice(2, 4)
             )})`;
 
-            await dbRun(insertQuery);
+            await focusDbRun(insertQuery);
 
             if (
                 isMorethanCurrentTime(
