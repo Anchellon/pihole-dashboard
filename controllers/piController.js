@@ -2,10 +2,10 @@
 var sqlite3 = require("sqlite3").verbose();
 var exec = require("child_process").exec;
 var fs = require("fs");
-// var dbFile = "test_db/gravity_old.db"; //file locations of the sqlite3 db
-// var dbFile = "/etc/pihole/gravity.db";
+// var dbFile = "db/gravity_old.db"; //file locations of the sqlite3 db
+var dbFile = "/etc/pihole/gravity.db";
 var dbExists = fs.existsSync(dbFile);
-var focusDbFile = "test_db/focus.db";
+var focusDbFile = "db/focus.db";
 let createQuery =
     "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain string, startTimeH int, startTimeM int, endTimeH int,endTimeM int);";
 var id = 0;
