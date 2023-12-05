@@ -8,7 +8,9 @@ var dbExists = fs.existsSync(dbFile);
 var focusDbFile = "db/focus.db";
 var db = new sqlite3.Database(dbFile);
 var focusDb = new sqlite3.Database(focusDbFile);
-
+const { promisify } = require("util");
+const dbAll = promisify(db.all).bind(db);
+const dbRun = promisify(db.run).bind(db);
 let createTableQuery =
     "CREATE TABLE IF NOT EXISTS focusdb( id PRIMARY KEY, domain text, startTimeH integer, startTimeM integer, endTimeH integer,endTimeM integer);";
 var id = 0;
@@ -126,39 +128,6 @@ exports.link_create_postMethod = async (req, res) => {
 exports.link_create_postMethod2 = (req, res) => {};
 // let toggleInternetQuery =
 // "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet;";
-// exports.toggle_internet = (req, res) => {
-//     // get current status of internet
-//     let toggleInternetQuery =
-//         "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet;";
-//     let truth = null;
-//     let id = null;
-//     db.each(toggleInternetQuery, [], (err, rows) => {
-//         if (err) {
-//             throw err;
-//         }
-//         rows.forEach((row) => {
-//             truth = row.enabled;
-//             id = row.id;
-//         });
-//     });
-//     if (truth) {
-//         truth = 0;
-//     } else {
-//         truth = 1;
-//     }
-//     let toggleQuery = `UPDATE domainlist SET enabled=${truth} WHERE id=${id};`;
-//     db.run(toggleQuery, [], function (err) {
-//         if (err) {
-//             console.log(err.message);
-//             return res.send(400, "Failled to add");
-//         }
-//         // get the last insert id
-//         console.log(`Rows inserted ${this.changes}`);
-//     });
-//     db.close();
-//     updatePihole();
-//     res.send(200, "Success");
-// };
 exports.toggle_internet = async (req, res) => {
     let toggleInternetQuery =
         "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet%';"; // Properly close the LIKE clause
@@ -218,68 +187,58 @@ exports.toggle_internet = async (req, res) => {
 //  ]
 // }
 // Work with the python parser
-exports.focusMode = (req, res) => {
-    let focusRecord = req.body.focusRecord;
-    let lastIdQuery = "SELECT * FROM focusdb ORDER BY id DESC LIMIT 1;";
-    let lastId = 0;
-    // get last id from focus db
-    focusDb.all(lastIdQuery, [], (err, rows) => {
-        if (err) {
-            throw err;
-        }
+exports.focusMode = async (req, res) => {
+    try {
+        let focusRecord = req.body.focusRecord;
+        let lastIdQuery = "SELECT * FROM focusdb ORDER BY id DESC LIMIT 1;";
+        let lastId = 0;
+
+        // get last id from focus db
+        const rows = await dbAll(lastIdQuery);
         rows.forEach((row) => {
             lastId = row.id;
         });
-    });
-    focusRecord.forEach((record) => {
-        let insertQuery = `INSERT INTO focusdb VALUES (${++lastId},${
-            record.domainName
-        },${parseInt(record.startTime.slice(0, 2))},${parseInt(
-            record.endTime.slice(2, 4)
-        )})`;
-        db.run(insertQuery, [], function (err) {
-            if (err) {
-                console.log(err.message);
-                return res.send(400, "Failled to add");
-            }
-            // get the last insert id
-            console.log(`Rows inserted ${this.changes}`);
-        });
-        if (
-            isMorethanCurrentTime(
-                parseInt(record.startTime.slice(0, 2)),
-                parseInt(record.endTime.slice(2, 4))
-            )
-        ) {
-            let lastIdDomList = 0;
-            let lastIdQueryDl =
-                "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
-            db.all(lastIdQueryDl, [], (err, rows) => {
-                if (err) {
-                    throw err;
-                }
-                rows.forEach((row) => {
+
+        for (const record of focusRecord) {
+            let insertQuery = `INSERT INTO focusdb VALUES (${++lastId},${
+                record.domainName
+            },${parseInt(record.startTime.slice(0, 2))},${parseInt(
+                record.endTime.slice(2, 4)
+            )})`;
+
+            await dbRun(insertQuery);
+
+            if (
+                isMorethanCurrentTime(
+                    parseInt(record.startTime.slice(0, 2)),
+                    parseInt(record.endTime.slice(2, 4))
+                )
+            ) {
+                let lastIdDomList = 0;
+                let lastIdQueryDl =
+                    "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
+
+                const rowsDomList = await dbAll(lastIdQueryDl);
+                rowsDomList.forEach((row) => {
                     lastIdDomList = row.id;
                 });
-            });
 
-            let updateQuery = `INSERT INTO domainlist VALUES(${lastIdDomList},3,${
-                record.domainName
-            },true, ${Date.now() / 1000},${Date.now() / 1000},"");`;
-            db.run(updateQuery, [], function (err) {
-                if (err) {
-                    console.log(err.message);
-                    return res.send(400, "Failled to add");
-                }
-                // get the last insert id
-                console.log(`Rows inserted ${this.changes}`);
-            });
+                let updateQuery = `INSERT INTO domainlist VALUES(${lastIdDomList},3,${
+                    record.domainName
+                },true, ${Date.now() / 1000},${Date.now() / 1000},"");`;
+
+                await dbRun(updateQuery);
+            }
         }
-    });
-    focusDb.close();
-    db.close();
-    updatePihole();
-    res.send(200, "Success");
+
+        focusDb.close();
+        db.close();
+        updatePihole();
+        res.status(200).send("Success");
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).send("Failed to add");
+    }
 };
 
 let isMorethanCurrentTime = (hour, min) => {
