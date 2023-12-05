@@ -85,7 +85,7 @@ exports.link_create_postMethod = async (req, res) => {
         }
         rows.forEach((row) => {
             lastId = row.id;
-            console.log(lastId + "hi");
+            console.log("bruh" + lastId + "hi");
         });
     });
     console.log(lastId);
