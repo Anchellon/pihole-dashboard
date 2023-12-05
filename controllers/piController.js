@@ -216,6 +216,7 @@ exports.focusMode = async (req, res) => {
         });
 
         for (const record of focusRecord) {
+            console.log(record);
             let insertQuery = `INSERT INTO focusdb VALUES (${++lastId},${
                 record.domainName
             },${parseInt(record.startTime.slice(0, 2))},${parseInt(
