@@ -87,6 +87,7 @@ exports.link_create_postMethod = async (req, res) => {
             lastId = row.id;
         });
     });
+    console.log(lastId);
 
     let queryString =
         "INSERT INTO domainlist VALUES" + generateQueryString(links, lastId);
