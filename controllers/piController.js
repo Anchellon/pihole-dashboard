@@ -93,7 +93,7 @@ function generateQueryString(links, id) {
 exports.link_create_postMethod = async (req, res) => {
     let links = req.body.domains;
     // let links = ["yelp.com", "airbnb.com"];
-
+    console.log(links);
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
     let getLastId = () => {
