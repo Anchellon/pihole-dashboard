@@ -91,7 +91,7 @@ function generateQueryString(links, id) {
 // This method taks in a request with the links
 // It is then added into the corresponding gravity db of the pihole so that functioning can take place
 exports.link_create_postMethod = async (req, res) => {
-    let links = req.body.domain;
+    let links = req.body.domains;
     // let links = ["yelp.com", "airbnb.com"];
 
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
