@@ -10,7 +10,7 @@ var db = new sqlite3.Database(dbFile);
 var focusDb = new sqlite3.Database(focusDbFile);
 
 let createTableQuery =
-    "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain text, startTimeH integer, startTimeM integer, endTimeH integer,endTimeM integer);";
+    "CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain text, startTimeH integer, startTimeM integer, endTimeH integer,endTimeM integer);";
 var id = 0;
 
 // Checking if DB Exists
