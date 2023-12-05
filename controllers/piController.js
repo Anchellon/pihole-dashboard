@@ -84,11 +84,11 @@ exports.link_create_postMethod = async (req, res) => {
             console.log("error fk");
             throw err;
         }
-        console.log("bruh2" + rows);
-        // rows.forEach((row) => {
-        //     lastId = row.id;
-        //     console.log("bruh" + lastId + "hi");
-        // });
+        // console.log("bruh2" + rows);
+        rows.forEach((row) => {
+            lastId = row.id;
+            console.log("bruh" + JSON.stringify(row) + "hi");
+        });
     });
 
     console.log(result);
