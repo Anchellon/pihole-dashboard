@@ -83,7 +83,7 @@ exports.link_create_postMethod = async (req, res) => {
         if (err) {
             throw err;
         }
-        console.log(rows);
+        console.log("bruh2" + rows);
         // rows.forEach((row) => {
         //     lastId = row.id;
         //     console.log("bruh" + lastId + "hi");
