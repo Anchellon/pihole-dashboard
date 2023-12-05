@@ -20,13 +20,28 @@ if (!dbExists || !focusDbFile) {
     console.log("DB Doesn't Exist");
 } else {
     console.log("connected to db");
-    focusDb.run(createTableQuery, [], function (err) {
-        if (err) {
-            console.log(err.message);
-        }
-        // get the last insert id
-        console.log(`Rows inserted ${this.changes}`);
-    });
+    let runFocusDbQuery = (createTableQuery) => {
+        return new Promise((resolve, reject) => {
+            focusDb.run(createTableQuery, [], function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(`Failed to run query: ${createTableQuery}`);
+                } else {
+                    console.log(`Rows inserted ${this.changes}`);
+                    resolve(`Rows inserted ${this.changes}`);
+                }
+            });
+        });
+    };
+    runFocusDbQuery(createTableQuery)
+        .then((successMessage) => {
+            console.log(successMessage);
+            // Do something with the success message
+        })
+        .catch((errorMessage) => {
+            console.error(errorMessage);
+            // Handle the error message
+        });
 }
 
 // INSERT INTO MyTable
