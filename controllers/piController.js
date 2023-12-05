@@ -7,7 +7,7 @@ var fs = require("fs");
 var dbExists = fs.existsSync(dbFile);
 var focusDbFile = "test_db/focus.db";
 let createQuery =
-    "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain string, startTime string, endTime string);";
+    "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain string, startTimeH int, startTimeM int, endTimeH int,endTimeM int);";
 var id = 0;
 // Checking if DB Exists
 if (!dbExists || !focusDbFile) {
@@ -96,7 +96,8 @@ exports.link_create_postMethod = async (req, res) => {
 };
 // Further work ability to enable and disable links, Potentially submit cron jobs too
 exports.link_create_postMethod2 = (req, res) => {};
-
+// let toggleInternetQuery =
+// "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet;";
 exports.toggle_internet = (req, res) => {
     // get current status of internet
     let toggleInternetQuery =
@@ -139,11 +140,12 @@ exports.toggle_internet = (req, res) => {
 //      }
 //  ]
 // }
-
+// Work with the python parser
 exports.focusMode = (req, res) => {
     let focusRecord = req.body.focusRecord;
     let lastIdQuery = "SELECT * FROM focusdb ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
+    // get last id from focus db
     focusDb.all(lastIdQuery, [], (err, rows) => {
         if (err) {
             throw err;
@@ -155,7 +157,9 @@ exports.focusMode = (req, res) => {
     focusRecord.forEach((record) => {
         let insertQuery = `INSERT INTO focusdb VALUES (${++lastId},${
             record.domainName
-        },${record.startTime},${record.endTime})`;
+        },${parseInt(record.startTime.slice(0, 2))},${parseInt(
+            record.endTime.slice(2, 4)
+        )})`;
         db.run(insertQuery, [], function (err) {
             if (err) {
                 console.log(err.message);
@@ -164,7 +168,12 @@ exports.focusMode = (req, res) => {
             // get the last insert id
             console.log(`Rows inserted ${this.changes}`);
         });
-        if (isMorethanCurrentTime(record.startTime)) {
+        if (
+            isMorethanCurrentTime(
+                parseInt(record.startTime.slice(0, 2)),
+                parseInt(record.endTime.slice(2, 4))
+            )
+        ) {
             let lastIdDomList = 0;
             let lastIdQueryDl =
                 "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
@@ -194,4 +203,11 @@ exports.focusMode = (req, res) => {
     db.close();
     updatePihole();
     res.send(200, "Success");
+};
+
+let isMorethanCurrentTime = (hour, min) => {
+    if (hour >= new Date().getHours() && min > new Date().getMinutes()) {
+        return true;
+    }
+    return false;
 };
