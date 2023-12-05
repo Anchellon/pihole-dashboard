@@ -6,17 +6,27 @@ var fs = require("fs");
 var dbFile = "/etc/pihole/gravity.db";
 var dbExists = fs.existsSync(dbFile);
 var focusDbFile = "db/focus.db";
-let createQuery =
-    "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain string, startTimeH int, startTimeM int, endTimeH int,endTimeM int);";
+var db = new sqlite3.Database(dbFile);
+var focusDb = new sqlite3.Database(focusDbFile);
+
+let createTableQuery =
+    "INSERT CREATE TABLE IF NOT EXISTS focus.focusdb( id PRIMARY KEY, domain text, startTimeH integer, startTimeM integer, endTimeH integer,endTimeM integer);";
 var id = 0;
+
 // Checking if DB Exists
 if (!dbExists || !focusDbFile) {
     console.log("DB Doesn't Exist");
 } else {
     console.log("connected to db");
+    focusDb.run(createTableQuery, [], function (err) {
+        if (err) {
+            console.log(err.message);
+        }
+        // get the last insert id
+        console.log(`Rows inserted ${this.changes}`);
+    });
 }
-var db = new sqlite3.Database(dbFile);
-var focusDb = new sqlite3.Database(focusDbFile);
+
 // INSERT INTO MyTable
 //     ( Column_foo, Column_CreatedOn)
 //     VALUES
