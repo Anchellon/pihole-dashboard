@@ -205,6 +205,7 @@ exports.toggle_internet = async (req, res) => {
 exports.focusMode = async (req, res) => {
     try {
         let focusRecord = req.body.focusRecord;
+        console.log(focusRecord);
         let lastIdQuery = "SELECT * FROM focusdb ORDER BY id DESC LIMIT 1;";
         let lastId = 0;
 
