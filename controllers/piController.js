@@ -205,6 +205,7 @@ exports.toggle_internet = async (req, res) => {
 // }
 // Work with the python parser
 exports.focusMode = async (req, res) => {
+    console.log(req.body);
     try {
         let focusRecord = req.body.focusRecord;
         console.log(focusRecord);
