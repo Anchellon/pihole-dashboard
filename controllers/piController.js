@@ -184,7 +184,7 @@ exports.toggle_internet = async (req, res) => {
             // get the last insert id cause why not
             console.log(`Rows updated ${this.changes}`);
         });
-        db.close();
+
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
@@ -203,8 +203,9 @@ exports.toggle_internet = async (req, res) => {
 // }
 // Work with the python parser
 exports.focusMode = async (req, res) => {
+    console.log(req.body);
     try {
-        let focusRecord = req.body.focusRecord;
+        let focusRecord = req.body;
         console.log(focusRecord);
         let lastIdQuery = "SELECT * FROM focusdb ORDER BY id DESC LIMIT 1;";
         let lastId = 0;
@@ -245,9 +246,7 @@ exports.focusMode = async (req, res) => {
 
                 let updateQuery = `INSERT INTO domainlist VALUES(${++lastIdDomList},3,\"${
                     record.domainName
-                }\",true, ${Date.now() / 1000},${
-                    Date.now() / 1000
-                },"") ON CONFLICT(domain) DO NOTHING;`;
+                }\",true, ${Date.now() / 1000},${Date.now() / 1000},"") ;`;
 
                 await dbRun(updateQuery);
             }
