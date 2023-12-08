@@ -91,6 +91,8 @@ function generateQueryString(links, id) {
 // This method taks in a request with the links
 // It is then added into the corresponding gravity db of the pihole so that functioning can take place
 exports.link_create_postMethod = async (req, res) => {
+    var db = new sqlite3.Database(dbFile);
+    var focusDb = new sqlite3.Database(focusDbFile);
     let links = req.body;
     // let links = ["yelp.com", "airbnb.com"];
     console.log(links);
@@ -131,7 +133,7 @@ exports.link_create_postMethod = async (req, res) => {
             // get the last insert id
             console.log(`Rows inserted ${this.changes}`);
         });
-        // db.commit();
+        db.close();
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
@@ -144,6 +146,8 @@ exports.link_create_postMethod2 = (req, res) => {};
 // let toggleInternetQuery =
 // "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet;";
 exports.toggle_internet = async (req, res) => {
+    var db = new sqlite3.Database(dbFile);
+    var focusDb = new sqlite3.Database(focusDbFile);
     let toggleInternetQuery =
         "SELECT * FROM domainlist WHERE comment LIKE 'toggle-internet%';"; // Properly close the LIKE clause
     let getInternetStatus = () => {
@@ -184,7 +188,7 @@ exports.toggle_internet = async (req, res) => {
             // get the last insert id cause why not
             console.log(`Rows updated ${this.changes}`);
         });
-        // db.commit();
+        db.close();
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
@@ -203,6 +207,8 @@ exports.toggle_internet = async (req, res) => {
 // }
 // Work with the python parser
 exports.focusMode = async (req, res) => {
+    var db = new sqlite3.Database(dbFile);
+    var focusDb = new sqlite3.Database(focusDbFile);
     console.log(req.body);
     try {
         let focusRecord = req.body;
@@ -252,8 +258,8 @@ exports.focusMode = async (req, res) => {
             }
         }
 
-        // focusDb.commit();
-        // db.commit();
+        focusDb.close();
+        db.close();
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
