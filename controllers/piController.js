@@ -91,6 +91,7 @@ function generateQueryString(links, id) {
 // This method taks in a request with the links
 // It is then added into the corresponding gravity db of the pihole so that functioning can take place
 exports.link_create_postMethod = async (req, res) => {
+    console.log(req.body);
     let links = req.body.domainName;
     // let links = ["yelp.com", "airbnb.com"];
     console.log(links);
