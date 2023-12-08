@@ -186,7 +186,7 @@ exports.toggle_internet = async (req, res) => {
             // get the last insert id cause why not
             console.log(`Rows updated ${this.changes}`);
         });
-        db.close();
+
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
