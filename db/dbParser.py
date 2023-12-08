@@ -17,18 +17,18 @@ id = dlId.fetchone()[0] + 1
 
 # (3,<linktext>,true, Date.now() / 1000,Date.now() / 1000,"")
 
-turnOnRes = focusCur.execute("SELECT domainName from focusdb where startTimeH =" + now.hour +" and startTimeM <" + now.minute)
+turnOnRes = focusCur.execute("SELECT domain from focusdb where startTimeH =" + str(now.hour) +" and startTimeM <" + str(now.minute))
 links = turnOnRes.fetchall()
 for link in links:
     domainName = link[0]
-    cur.execute("INSERT INTO domainlist(id,type,domain,enabled,date_added,date_modified,comment) VALUES("+id+",3,"+domainName+",true,"+ time.mktime(now.timetuple())+","+time.mktime(now.timetuple())+","") ON CONFLICT("+domainName+") DO NOTHING;")
+    cur.execute("INSERT INTO domainlist(id,type,domain,enabled,date_added,date_modified,comment) VALUES("+str(id)+",3,\""+domainName+"\",true,"+ str(time.mktime(now.timetuple()))+","+str(time.mktime(now.timetuple()))+",\"\");")
 
 
-turnOffRes = focusCur.execute("SELECT domainName from focusdb where endTimeH =" + now.hour +" and endTimeM <" + now.minute)
+turnOffRes = focusCur.execute("SELECT domain from focusdb where endTimeH =" + str(now.hour) +" and endTimeM <" + str(now.minute))
 links = turnOnRes.fetchall()
 for link in links:
     domainName = link[0]
-    cur.execute("INSERT INTO domainlist(id,type,domain,enabled,date_added,date_modified,comment) VALUES("+id+",3,"+domainName+",false,"+ time.mktime(now.timetuple())+","+time.mktime(now.timetuple())+","") ON CONFLICT("+domainName+") DO NOTHING;")
+    cur.execute("INSERT INTO domainlist(id,type,domain,enabled,date_added,date_modified,comment) VALUES("+str(id)+",3,\""+domainName+"\",false,"+ str(time.mktime(now.timetuple()))+","+str(time.mktime(now.timetuple()))+",\"\");")
 focusCon.commit()
 con.commit()
 os.system("pihole -g")
