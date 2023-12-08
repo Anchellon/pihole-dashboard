@@ -131,7 +131,7 @@ exports.link_create_postMethod = async (req, res) => {
             // get the last insert id
             console.log(`Rows inserted ${this.changes}`);
         });
-        db.close();
+        db.commit();
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
@@ -184,7 +184,7 @@ exports.toggle_internet = async (req, res) => {
             // get the last insert id cause why not
             console.log(`Rows updated ${this.changes}`);
         });
-
+        db.commit();
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
@@ -252,8 +252,8 @@ exports.focusMode = async (req, res) => {
             }
         }
 
-        focusDb.close();
-        db.close();
+        focusDb.commit();
+        db.commit();
         updatePihole();
         res.status(200).send("Success");
     } catch (error) {
