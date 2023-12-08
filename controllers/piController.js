@@ -248,9 +248,7 @@ exports.focusMode = async (req, res) => {
 
                 let updateQuery = `INSERT INTO domainlist VALUES(${++lastIdDomList},3,\"${
                     record.domainName
-                }\",true, ${Date.now() / 1000},${
-                    Date.now() / 1000
-                },"") ON CONFLICT(domain) DO NOTHING;`;
+                }\",true, ${Date.now() / 1000},${Date.now() / 1000},"") ;`;
 
                 await dbRun(updateQuery);
             }
