@@ -94,6 +94,7 @@ exports.link_create_postMethod = async (req, res) => {
     let links = req.body.links;
     // let links = ["yelp.com", "airbnb.com"];
     consoel.log(links);
+    console.log("Hi im hit");
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
     let getLastId = () => {
