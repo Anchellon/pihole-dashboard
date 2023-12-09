@@ -93,10 +93,10 @@ function generateQueryString(links, id) {
 exports.link_create_postMethod = async (req, res) => {
     var db = new sqlite3.Database(dbFile);
     var focusDb = new sqlite3.Database(focusDbFile);
-
+    let links = req.body;
     // let links = ["yelp.com", "airbnb.com"];
     console.log(links);
-    let links = req.body.split(" ");
+
     let lastIdQuery = "SELECT * FROM domainlist ORDER BY id DESC LIMIT 1;";
     let lastId = 0;
     let getLastId = () => {
